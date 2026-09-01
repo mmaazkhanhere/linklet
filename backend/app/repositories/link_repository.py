@@ -1,0 +1,2 @@
+class LinkRepository:
+    pass

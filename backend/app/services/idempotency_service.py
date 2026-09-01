@@ -1,0 +1,2 @@
+class IdempotencyService:
+    pass
