@@ -1,5 +1,5 @@
 import React from "react"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, RefreshCw, Trash2 } from "lucide-react"
 import { LinkItem } from "@/lib/api"
 
 const redirectBaseUrl =
@@ -10,9 +10,11 @@ const redirectUrl = (shortCode: string) => `${redirectBaseUrl}/${shortCode}`
 
 interface LinkTableProps {
   links: LinkItem[]
+  onRegenerate: (linkId: string) => Promise<void>
+  onDelete: (linkId: string) => Promise<void>
 }
 
-export const LinkTable: React.FC<LinkTableProps> = ({ links }) => {
+export const LinkTable: React.FC<LinkTableProps> = ({ links, onRegenerate, onDelete }) => {
   return (
     <div className="w-full overflow-x-auto rounded-lg border border-border bg-card">
       <table className="w-full text-left text-sm">
@@ -62,6 +64,22 @@ export const LinkTable: React.FC<LinkTableProps> = ({ links }) => {
                   >
                     <ExternalLink className="h-4 w-4" />
                   </a>
+                  <button
+                    type="button"
+                    onClick={() => void onRegenerate(link.link_id)}
+                    className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground"
+                    aria-label={`Regenerate ${link.short_code}`}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void onDelete(link.link_id)}
+                    className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-destructive"
+                    aria-label={`Delete ${link.short_code}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </td>
               </tr>
             ))

@@ -11,6 +11,8 @@ import {
   getApiErrorMessage,
   getCurrentUser,
   listLinks,
+  regenerateLink,
+  deleteLink,
 } from "@/lib/api"
 
 export const Dashboard: React.FC = () => {
@@ -26,7 +28,7 @@ export const Dashboard: React.FC = () => {
     try {
       const [currentUser, linkList] = await Promise.all([getCurrentUser(), listLinks()])
       setUser(currentUser)
-      setLinks(linkList.items)
+      setLinks(linkList)
     } catch (err) {
       localStorage.removeItem(authTokenStorageKey)
       navigate("/login", { replace: true })
@@ -45,6 +47,24 @@ export const Dashboard: React.FC = () => {
 
   const handleLinkError = (err: unknown) => {
     setError(getApiErrorMessage(err, "Unable to create link."))
+  }
+
+  const handleRegenerate = async (linkId: string) => {
+    try {
+      const updated = await regenerateLink(linkId)
+      setLinks((current) => current.map((link) => (link.link_id === linkId ? updated : link)))
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Unable to regenerate link."))
+    }
+  }
+
+  const handleDelete = async (linkId: string) => {
+    try {
+      await deleteLink(linkId)
+      setLinks((current) => current.filter((link) => link.link_id !== linkId))
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Unable to delete link."))
+    }
   }
 
   return (
@@ -70,7 +90,7 @@ export const Dashboard: React.FC = () => {
               totalClicks={links.reduce((total, link) => total + link.total_clicks, 0)}
             />
             <CreateLinkModal onCreated={handleLinkCreated} onError={handleLinkError} />
-            <LinkTable links={links} />
+            <LinkTable links={links} onRegenerate={handleRegenerate} onDelete={handleDelete} />
           </>
         )}
       </main>

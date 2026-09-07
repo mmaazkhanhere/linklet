@@ -16,6 +16,5 @@ class LinkResponse(BaseModel):
     created_on: datetime
 
 
-class LinkListResponse(BaseModel):
-    items: list[LinkResponse]
-    total: int
+class LinkDeleteResponse(BaseModel):
+    message: str

@@ -46,9 +46,8 @@ export interface LinkItem {
   created_on: string
 }
 
-export interface LinkListResponse {
-  items: LinkItem[]
-  total: number
+export interface LinkDeleteResponse {
+  message: string
 }
 
 export const getApiErrorMessage = (error: unknown, fallback: string) => {
@@ -78,7 +77,21 @@ export const getCurrentUser = async () => {
 }
 
 export const listLinks = async () => {
-  const response = await api.get<LinkListResponse>("/links")
+  const response = await api.get<LinkItem[]>("/links")
+  return response.data
+}
+
+export const regenerateLink = async (linkId: string) => {
+  const response = await api.put<LinkItem>(`/links/${linkId}`, undefined, {
+    headers: { "Idempotency-Key": crypto.randomUUID() },
+  })
+  return response.data
+}
+
+export const deleteLink = async (linkId: string) => {
+  const response = await api.delete<LinkDeleteResponse>(`/links/${linkId}`, {
+    headers: { "Idempotency-Key": crypto.randomUUID() },
+  })
   return response.data
 }
 

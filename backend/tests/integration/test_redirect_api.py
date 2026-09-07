@@ -59,6 +59,24 @@ async def test_health_route_is_not_captured_by_redirect(async_client: AsyncClien
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "path, expected_status",
+    [("/docs", 200), ("/redoc", 200), ("/openapi.json", 200), ("/api/v1/links", 401)],
+)
+async def test_reserved_routes_are_not_captured_by_redirect(
+    async_client: AsyncClient, path: str, expected_status: int
+):
+    response = await async_client.get(path, follow_redirects=False)
+    assert response.status_code == expected_status
+
+
+@pytest.mark.asyncio
+async def test_malformed_short_code_does_not_resolve(async_client: AsyncClient):
+    response = await async_client.get("/too-short", follow_redirects=False)
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
 async def test_concurrent_redirects_do_not_lose_clicks(async_client: AsyncClient, db):
     link = await create_link(async_client, db, "concurrent-redirect@example.com")
 

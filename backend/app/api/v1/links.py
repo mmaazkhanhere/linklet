@@ -4,19 +4,41 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.core.database import get_db
 from backend.app.core.dependencies import get_current_user
 from backend.app.models.user import User
-from backend.app.schemas.link import LinkCreate, LinkListResponse, LinkResponse
+from backend.app.schemas.link import LinkCreate, LinkDeleteResponse, LinkResponse
 from backend.app.services.link_service import LinkService
 
 router = APIRouter(prefix="/links", tags=["links"])
 
 
-@router.get("", response_model=LinkListResponse)
+@router.get("", response_model=list[LinkResponse])
 async def list_links(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
     link_service: LinkService = Depends(),
-) -> LinkListResponse:
+) -> list[LinkResponse]:
     return await link_service.list_links(db, current_user)
+
+
+@router.put("/{link_id}", response_model=LinkResponse)
+async def regenerate_link(
+    link_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    link_service: LinkService = Depends(),
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key", max_length=255),
+) -> LinkResponse:
+    return await link_service.regenerate_link(db, current_user, link_id, idempotency_key)
+
+
+@router.delete("/{link_id}", response_model=LinkDeleteResponse)
+async def delete_link(
+    link_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    link_service: LinkService = Depends(),
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key", max_length=255),
+) -> LinkDeleteResponse:
+    return await link_service.delete_link(db, current_user, link_id, idempotency_key)
 
 
 @router.post("", response_model=LinkResponse, status_code=status.HTTP_201_CREATED)
