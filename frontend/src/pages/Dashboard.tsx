@@ -67,7 +67,7 @@ export const Dashboard: React.FC = () => {
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
             <AnalyticsCard
               totalLinks={links.length}
-              totalClicks={links.reduce((total, link) => total + link.clicks, 0)}
+              totalClicks={links.reduce((total, link) => total + link.total_clicks, 0)}
             />
             <CreateLinkModal onCreated={handleLinkCreated} onError={handleLinkError} />
             <LinkTable links={links} />

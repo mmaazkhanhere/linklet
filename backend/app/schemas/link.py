@@ -1,22 +1,19 @@
 from datetime import datetime
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LinkCreate(BaseModel):
-    target_url: str
+    destination_url: str = Field(min_length=1)
 
 
 class LinkResponse(BaseModel):
-    id: str
-    target_url: str
-    short_code: str
-    short_url: str
-    clicks: int
-    created_at: datetime
-    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True
+    link_id: str
+    destination_url: str
+    short_code: str
+    total_clicks: int
+    created_on: datetime
 
 
 class LinkListResponse(BaseModel):

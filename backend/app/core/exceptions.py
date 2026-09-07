@@ -49,6 +49,26 @@ class UserNotFoundError(DomainException):
         )
 
 
+class InvalidDestinationUrlError(DomainException):
+    def __init__(self, message: str = "Destination URL must be a valid absolute HTTP or HTTPS URL."):
+        super().__init__("INVALID_DESTINATION_URL", message, status.HTTP_400_BAD_REQUEST)
+
+
+class ShortCodeGenerationFailedError(DomainException):
+    def __init__(self):
+        super().__init__("SHORT_CODE_GENERATION_FAILED", "Unable to generate a unique short code.", status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class IdempotencyKeyMisuseError(DomainException):
+    def __init__(self):
+        super().__init__("IDEMPOTENCY_KEY_MISUSE", "The idempotency key has already been used with a different request payload.")
+
+
+class IdempotencyInProgressError(DomainException):
+    def __init__(self):
+        super().__init__("IDEMPOTENCY_REQUEST_IN_PROGRESS", "A request with this idempotency key is currently in progress.", status.HTTP_409_CONFLICT)
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     """Registers exception handlers on the FastAPI application for uniform error responses."""
 

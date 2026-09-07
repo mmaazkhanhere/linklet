@@ -28,10 +28,10 @@ export const LinkTable: React.FC<LinkTableProps> = ({ links }) => {
             </tr>
           ) : (
             links.map((link) => (
-              <tr key={link.id}>
+              <tr key={link.link_id}>
                 <td className="px-4 py-3">
                   <a
-                    href={link.short_url}
+                    href={`/r/${link.short_code}`}
                     target="_blank"
                     rel="noreferrer"
                     className="font-medium text-primary hover:underline"
@@ -40,15 +40,15 @@ export const LinkTable: React.FC<LinkTableProps> = ({ links }) => {
                   </a>
                 </td>
                 <td className="max-w-md truncate px-4 py-3 text-muted-foreground">
-                  {link.target_url}
+                  {link.destination_url}
                 </td>
-                <td className="px-4 py-3">{link.clicks}</td>
+                <td className="px-4 py-3">{link.total_clicks}</td>
                 <td className="px-4 py-3 text-muted-foreground">
-                  {new Date(link.created_at).toLocaleDateString()}
+                  {new Date(link.created_on).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <a
-                    href={link.short_url}
+                    href={`/r/${link.short_code}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground"

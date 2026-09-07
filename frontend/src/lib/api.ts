@@ -39,13 +39,11 @@ export interface TokenResponse {
 }
 
 export interface LinkItem {
-  id: string
-  target_url: string
+  link_id: string
+  destination_url: string
   short_code: string
-  short_url: string
-  clicks: number
-  created_at: string
-  updated_at: string
+  total_clicks: number
+  created_on: string
 }
 
 export interface LinkListResponse {
@@ -84,7 +82,11 @@ export const listLinks = async () => {
   return response.data
 }
 
-export const createLink = async (targetUrl: string) => {
-  const response = await api.post<LinkItem>("/links", { target_url: targetUrl })
+export const createLink = async (destinationUrl: string) => {
+  const response = await api.post<LinkItem>(
+    "/links",
+    { destination_url: destinationUrl },
+    { headers: { "Idempotency-Key": crypto.randomUUID() } },
+  )
   return response.data
 }

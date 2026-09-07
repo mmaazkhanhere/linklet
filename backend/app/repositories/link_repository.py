@@ -7,7 +7,7 @@ from backend.app.models.link import Link
 class LinkRepository:
     async def list_by_user(self, db: AsyncSession, user_id: str) -> list[Link]:
         result = await db.execute(
-            select(Link).where(Link.user_id == user_id).order_by(Link.created_at.desc())
+            select(Link).where(Link.user_id == user_id).order_by(Link.created_on.desc())
         )
         return list(result.scalars().all())
 
@@ -19,11 +19,10 @@ class LinkRepository:
         self,
         db: AsyncSession,
         user_id: str,
-        target_url: str,
+        destination_url: str,
         short_code: str,
     ) -> Link:
-        link = Link(user_id=user_id, target_url=target_url, short_code=short_code)
+        link = Link(user_id=user_id, destination_url=destination_url, short_code=short_code)
         db.add(link)
-        await db.commit()
-        await db.refresh(link)
+        await db.flush()
         return link

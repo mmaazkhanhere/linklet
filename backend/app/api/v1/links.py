@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Header, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.database import get_db
@@ -25,5 +25,6 @@ async def create_link(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
     link_service: LinkService = Depends(),
+    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key", max_length=255),
 ) -> LinkResponse:
-    return await link_service.create_link(db, current_user, request)
+    return await link_service.create_link(db, current_user, request, idempotency_key)
