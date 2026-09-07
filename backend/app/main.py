@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from backend.app.api.router import api_router
 from backend.app.config import settings
+from backend.app.core.exceptions import register_exception_handlers
 
 app = FastAPI(
     title="Linklet API",
@@ -19,6 +21,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register custom exception handlers for standardized error responses
+register_exception_handlers(app)
+
 app.include_router(api_router)
 
 
@@ -28,5 +33,5 @@ async def health_check():
     return {
         "status": "healthy",
         "environment": settings.ENVIRONMENT,
-        "service": "Linklet API"
+        "service": "Linklet API",
     }

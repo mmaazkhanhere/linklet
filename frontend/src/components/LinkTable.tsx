@@ -1,15 +1,12 @@
 import React from "react"
+import { ExternalLink } from "lucide-react"
+import { LinkItem } from "@/lib/api"
 
-export interface LinkItem {
-  id: string
-  target_url: string
-  short_code: string
-  short_url: string
-  clicks: number
-  created_at: string
+interface LinkTableProps {
+  links: LinkItem[]
 }
 
-export const LinkTable: React.FC = () => {
+export const LinkTable: React.FC<LinkTableProps> = ({ links }) => {
   return (
     <div className="w-full overflow-x-auto rounded-lg border border-border bg-card">
       <table className="w-full text-left text-sm">
@@ -23,11 +20,46 @@ export const LinkTable: React.FC = () => {
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          <tr>
-            <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-              No links created yet.
-            </td>
-          </tr>
+          {links.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                No links created yet.
+              </td>
+            </tr>
+          ) : (
+            links.map((link) => (
+              <tr key={link.id}>
+                <td className="px-4 py-3">
+                  <a
+                    href={link.short_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {link.short_code}
+                  </a>
+                </td>
+                <td className="max-w-md truncate px-4 py-3 text-muted-foreground">
+                  {link.target_url}
+                </td>
+                <td className="px-4 py-3">{link.clicks}</td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {new Date(link.created_at).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <a
+                    href={link.short_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground"
+                    aria-label={`Open ${link.short_code}`}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

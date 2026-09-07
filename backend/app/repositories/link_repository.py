@@ -1,2 +1,29 @@
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from backend.app.models.link import Link
+
+
 class LinkRepository:
-    pass
+    async def list_by_user(self, db: AsyncSession, user_id: str) -> list[Link]:
+        result = await db.execute(
+            select(Link).where(Link.user_id == user_id).order_by(Link.created_at.desc())
+        )
+        return list(result.scalars().all())
+
+    async def get_by_short_code(self, db: AsyncSession, short_code: str) -> Link | None:
+        result = await db.execute(select(Link).where(Link.short_code == short_code))
+        return result.scalar_one_or_none()
+
+    async def create(
+        self,
+        db: AsyncSession,
+        user_id: str,
+        target_url: str,
+        short_code: str,
+    ) -> Link:
+        link = Link(user_id=user_id, target_url=target_url, short_code=short_code)
+        db.add(link)
+        await db.commit()
+        await db.refresh(link)
+        return link

@@ -1,9 +1,12 @@
+from typing import Any, Optional
 from pydantic import BaseModel
 
 
-class ProblemDetail(BaseModel):
-    type: str = "about:blank"
-    title: str
-    status: int
-    detail: str
-    instance: str | None = None
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+    details: Optional[Any] = None
+
+
+class ErrorResponse(BaseModel):
+    error: ErrorDetail

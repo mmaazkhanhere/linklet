@@ -1,9 +1,16 @@
 import asyncio
+import sys
+from pathlib import Path
 from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
+
+# Ensure workspace root is in sys.path
+root_dir = Path(__file__).resolve().parents[2]
+if str(root_dir) not in sys.path:
+    sys.path.insert(0, str(root_dir))
 
 from backend.app.config import settings
 from backend.app.core.database import Base
