@@ -1,7 +1,6 @@
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from backend.app.models.link import Link
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class LinkRepository:
@@ -13,6 +12,17 @@ class LinkRepository:
 
     async def get_by_short_code(self, db: AsyncSession, short_code: str) -> Link | None:
         result = await db.execute(select(Link).where(Link.short_code == short_code))
+        return result.scalar_one_or_none()
+
+    async def increment_clicks_and_get_destination(
+        self, db: AsyncSession, short_code: str
+    ) -> str | None:
+        result = await db.execute(
+            update(Link)
+            .where(Link.short_code == short_code)
+            .values(total_clicks=Link.total_clicks + 1)
+            .returning(Link.destination_url)
+        )
         return result.scalar_one_or_none()
 
     async def create(

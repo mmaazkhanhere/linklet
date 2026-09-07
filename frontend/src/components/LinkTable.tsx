@@ -2,6 +2,12 @@ import React from "react"
 import { ExternalLink } from "lucide-react"
 import { LinkItem } from "@/lib/api"
 
+const redirectBaseUrl =
+  import.meta.env.VITE_REDIRECT_BASE_URL ||
+  (import.meta.env.DEV ? "http://localhost:8000" : window.location.origin)
+
+const redirectUrl = (shortCode: string) => `${redirectBaseUrl}/${shortCode}`
+
 interface LinkTableProps {
   links: LinkItem[]
 }
@@ -31,7 +37,7 @@ export const LinkTable: React.FC<LinkTableProps> = ({ links }) => {
               <tr key={link.link_id}>
                 <td className="px-4 py-3">
                   <a
-                    href={`/r/${link.short_code}`}
+                    href={redirectUrl(link.short_code)}
                     target="_blank"
                     rel="noreferrer"
                     className="font-medium text-primary hover:underline"
@@ -48,7 +54,7 @@ export const LinkTable: React.FC<LinkTableProps> = ({ links }) => {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <a
-                    href={`/r/${link.short_code}`}
+                    href={redirectUrl(link.short_code)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground"

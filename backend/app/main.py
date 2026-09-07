@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.api.router import api_router
+from backend.app.api.v1 import redirect
 from backend.app.config import settings
 from backend.app.core.exceptions import register_exception_handlers
 
@@ -35,3 +36,7 @@ async def health_check():
         "environment": settings.ENVIRONMENT,
         "service": "Linklet API",
     }
+
+
+# Keep management and framework routes ahead of the root catch-all redirect route.
+app.include_router(redirect.router)

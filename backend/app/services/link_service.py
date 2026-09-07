@@ -1,14 +1,16 @@
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from backend.app.core.exceptions import InvalidDestinationUrlError
+from backend.app.core.exceptions import (
+    InvalidDestinationUrlError,
+    LinkNotFoundError,
+    ShortCodeGenerationFailedError,
+)
 from backend.app.models.user import User
 from backend.app.repositories.link_repository import LinkRepository
 from backend.app.schemas.link import LinkCreate, LinkListResponse, LinkResponse
-from backend.app.core.exceptions import ShortCodeGenerationFailedError
 from backend.app.services.generator_service import generate_short_code
 from backend.app.services.idempotency_service import IdempotencyService
 from backend.app.services.url_validator import validate_destination_url
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class LinkService:
@@ -20,6 +22,14 @@ class LinkService:
         links = await self.link_repo.list_by_user(db, user.id)
         items = [self._to_response(link) for link in links]
         return LinkListResponse(items=items, total=len(items))
+
+    async def resolve_and_record_click(self, db: AsyncSession, short_code: str) -> str:
+        destination_url = await self.link_repo.increment_clicks_and_get_destination(db, short_code)
+        if destination_url is None:
+            await db.rollback()
+            raise LinkNotFoundError()
+        await db.commit()
+        return destination_url
 
     async def create_link(
         self, db: AsyncSession, user: User, request: LinkCreate, idempotency_key: str | None = None

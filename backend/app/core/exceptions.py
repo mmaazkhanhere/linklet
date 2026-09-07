@@ -49,6 +49,11 @@ class UserNotFoundError(DomainException):
         )
 
 
+class LinkNotFoundError(DomainException):
+    def __init__(self, message: str = "The requested short link does not exist or has been removed."):
+        super().__init__("LINK_NOT_FOUND", message, status.HTTP_404_NOT_FOUND)
+
+
 class InvalidDestinationUrlError(DomainException):
     def __init__(self, message: str = "Destination URL must be a valid absolute HTTP or HTTPS URL."):
         super().__init__("INVALID_DESTINATION_URL", message, status.HTTP_400_BAD_REQUEST)
