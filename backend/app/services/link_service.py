@@ -58,7 +58,7 @@ class LinkService:
 
             response = self._to_response(link)
             if record:
-                await self.idempotency.complete(record, 200, response.model_dump(mode="json"))
+                await self.idempotency.complete(db, record, 200, response.model_dump(mode="json"))
             return response
 
     async def delete_link(
@@ -71,7 +71,7 @@ class LinkService:
             record = None
             if idempotency_key:
                 record, replay = await self.idempotency.claim(
-                    db, user_id, "DELETE", idempotency_key, {"link_id": link_id}
+                    db, user_id, "DELETE", idempotency_key, None
                 )
                 if replay is not None:
                     return LinkDeleteResponse.model_validate(replay)
@@ -85,7 +85,7 @@ class LinkService:
 
             response = LinkDeleteResponse(message="Link successfully deleted.")
             if record:
-                await self.idempotency.complete(record, 200, response.model_dump(mode="json"))
+                await self.idempotency.complete(db, record, 200, response.model_dump(mode="json"))
             return response
 
     async def resolve_and_record_click(self, db: AsyncSession, short_code: str) -> str:
@@ -134,7 +134,7 @@ class LinkService:
 
             response = self._to_response(link)
             if record:
-                await self.idempotency.complete(record, 201, response.model_dump(mode="json"))
+                await self.idempotency.complete(db, record, 201, response.model_dump(mode="json"))
             return response
 
     @staticmethod
