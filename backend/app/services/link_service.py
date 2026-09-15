@@ -71,7 +71,7 @@ class LinkService:
             record = None
             if idempotency_key:
                 record, replay = await self.idempotency.claim(
-                    db, user_id, "DELETE", idempotency_key, None
+                    db, user_id, "DELETE", idempotency_key, {"link_id": link_id}
                 )
                 if replay is not None:
                     return LinkDeleteResponse.model_validate(replay)
